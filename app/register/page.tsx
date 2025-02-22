@@ -11,10 +11,10 @@ import api from '@/src/services/axiosInstance'
 export default function RegisterPage() {
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
-    company: "",
+    nome: "",
     cnpj_cpf: "",
     email: "",
-    phone: "",
+    telefone: "",
     password: "",
   })
 
@@ -30,7 +30,8 @@ export default function RegisterPage() {
     e.preventDefault()
   
     try {
-      const response = await api.post('/register', formData)
+
+      const response = await api.post('http://localhost:9090/api/empresa/register-new-enterprise', formData)
   
       if (response.status === 200) {
         console.log('Cadastro realizado com sucesso!')
@@ -62,12 +63,12 @@ export default function RegisterPage() {
                 <>
                   <div className="grid gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="company" className="text-white/90">
+                      <Label htmlFor="nome" className="text-white/90">
                         Nome da Empresa
                       </Label>
                       <Input
-                        id="company"
-                        value={formData.company}
+                        id="nome"
+                        value={formData.nome}
                         onChange={handleChange}
                         className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0"
                       />
@@ -113,13 +114,13 @@ export default function RegisterPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-white/90">
+                    <Label htmlFor="telefone" className="text-white/90">
                       Celular
                     </Label>
                     <Input
-                      id="phone"
+                      id="telefone"
                       type="tel"
-                      value={formData.phone}
+                      value={formData.telefone}
                       onChange={handleChange}
                       className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0"
                     />
