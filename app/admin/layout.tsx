@@ -5,13 +5,13 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, MessageSquare, Calendar, Settings, Users, BarChart, ChevronLeft, Menu } from "lucide-react"
+import { LayoutDashboard, MessageSquare, Calendar, Settings, Users, BarChart, ChevronLeft, Menu,QrCode } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
 const menuItems = [
   {
-    title: "Dashboard",
+    title: "Painel",
     href: "/admin",
     icon: LayoutDashboard,
   },
@@ -21,22 +21,27 @@ const menuItems = [
     icon: MessageSquare,
   },
   {
-    title: "Appointments",
+    title: "Agenda",
     href: "/admin/appointments",
     icon: Calendar,
   },
+  // {
+  //   title: "Customers",
+  //   href: "/admin/customers",
+  //   icon: Users,
+  // },
+  // {
+  //   title: "Analytics",
+  //   href: "/admin/analytics",
+  //   icon: BarChart,
+  // },
   {
-    title: "Customers",
-    href: "/admin/customers",
-    icon: Users,
+    title: "Connection",
+    href: "/admin/connections",
+    icon: QrCode,
   },
   {
-    title: "Analytics",
-    href: "/admin/analytics",
-    icon: BarChart,
-  },
-  {
-    title: "Settings",
+    title: "Configuração",
     href: "/admin/settings",
     icon: Settings,
   },

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MessageSquare, Users, Calendar, ArrowUpRight } from "lucide-react"
+import { MessageSquare, Users, Calendar, ArrowUpRight,QrCode } from "lucide-react"
 
 export default function AdminDashboard() {
   return (

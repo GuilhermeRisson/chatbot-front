@@ -8,7 +8,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  isAdmin?: boolean;
+  companyId?: string; 
 }
 
 interface AuthContextData {
@@ -36,10 +36,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (data: SignInData) => {
     try {
       const response = await AuthService.signIn(data);
-      const { token, user } = response.data;
-
-      // Salva o token no cookie de forma segura
+      
+      const { token, usuario } = response.data;
+      
       document.cookie = `jwt=${token}; path=/; secure; samesite=strict`;
+      
+      localStorage.setItem('@App:userId', usuario.id);
+      if (usuario.empresa_id) {
+        localStorage.setItem('@App:companyId', usuario.empresa_id);
+      }
       
       setUser(user);
       router.push('/admin');
@@ -50,8 +55,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = () => {
-    // Remove o token do cookie ao fazer logout
     document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    localStorage.removeItem('@App:userId');
+    localStorage.removeItem('@App:companyId');
     setUser(null);
     router.push('/login');
   };
