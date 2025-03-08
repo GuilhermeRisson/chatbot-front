@@ -32,4 +32,47 @@ api.interceptors.response.use(
   }
 )
 
+export interface SignInData {
+  email: string;
+  password: string;
+}
+
+export interface SignUpData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export const AuthService = {
+  async signIn({ email, password }: SignInData) {
+    try {
+      const response = await api.post('http://localhost:9090/api/user/login', { email, password });
+      const { token } = response.data;
+      
+      if (token) {
+        localStorage.setItem('token', token);
+        api.defaults.headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async signUp(data: SignUpData) {
+    try {
+      const response = await api.post('/auth/register', data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  logout() {
+    localStorage.removeItem('@App:token');
+    delete api.defaults.headers['Authorization'];
+  }
+};
+
 export default api

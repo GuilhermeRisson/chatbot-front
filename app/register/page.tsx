@@ -1,15 +1,22 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowRight, Building2, Mail, Phone } from "lucide-react"
+import { useRouter } from 'next/navigation'
+import { ArrowRight, Building2, Mail, Phone, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import api from '@/src/services/axiosInstance'
+import { useAuth } from '@/src/contexts/AuthContext'
 
 export default function RegisterPage() {
+  const router = useRouter()
+  const { signIn } = useAuth()
   const [step, setStep] = useState(1)
+  const [errors, setErrors] = useState<{[key: string]: string}>({})
+  const [generalError, setGeneralError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     nome: "",
     cnpj_cpf: "",
@@ -28,18 +35,56 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setErrors({})
+    setGeneralError(null)
   
     try {
-
       const response = await api.post('http://localhost:9090/api/empresa/register-new-enterprise', formData)
   
-      if (response.status === 200) {
+      if (response.status === 201) {
         console.log('Cadastro realizado com sucesso!')
-      } else {
-        console.error('Erro ao cadastrar')
+        const { token } = response.data
+        
+        if (!token) {
+          setGeneralError('Token não recebido do servidor')
+          return
+        }
+
+        try {
+          await signIn({
+            email: formData.email,
+            password: formData.password,
+            token: token
+          })
+          
+          router.push('/admin')
+        } catch (loginError: any) {
+          console.error('Erro no login:', loginError)
+          setGeneralError('Cadastro realizado com sucesso, mas houve um erro ao fazer login automático. Por favor, tente fazer login manualmente.')
+        }
       }
-    } catch (error) {
-      console.error('Erro na requisição:', error)
+    } catch (error: any) {
+      // Se chegou aqui, é porque houve erro no cadastro
+      if (error.response?.data) {
+        const { data } = error.response
+        if (data.status === 'error') {
+          if (data.campo) {
+            setErrors({
+              [data.campo]: data.mensagem
+            })
+          } else if (data.erros) {
+            const newErrors: {[key: string]: string} = {}
+            data.erros.forEach((err: { campo: string, mensagem: string }) => {
+              newErrors[err.campo] = err.mensagem
+            })
+            setErrors(newErrors)
+          } else {
+            setGeneralError(data.mensagem || 'Ocorreu um erro ao cadastrar')
+          }
+        }
+      } else {
+        setGeneralError('Ocorreu um erro ao processar a requisição')
+      }
     }
   }
 
@@ -57,6 +102,13 @@ export default function RegisterPage() {
         </CardHeader>
 
         <CardContent className="relative">
+          {generalError && (
+            <Alert variant="destructive" className="mb-6 bg-red-500/10 border-red-500/20 text-red-400">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{generalError}</AlertDescription>
+            </Alert>
+          )}
+
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               {step === 1 ? (
@@ -70,8 +122,13 @@ export default function RegisterPage() {
                         id="nome"
                         value={formData.nome}
                         onChange={handleChange}
-                        className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0"
+                        className={`bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0 ${
+                          errors.nome ? 'border-red-500' : ''
+                        }`}
                       />
+                      {errors.nome && (
+                        <span className="text-sm text-red-500">{errors.nome}</span>
+                      )}
                     </div>
                   </div>
 
@@ -84,8 +141,13 @@ export default function RegisterPage() {
                         id="cnpj_cpf"
                         value={formData.cnpj_cpf}
                         onChange={handleChange}
-                        className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0"
+                        className={`bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0 ${
+                          errors.cnpj_cpf ? 'border-red-500' : ''
+                        }`}
                       />
+                      {errors.cnpj_cpf && (
+                        <span className="text-sm text-red-500">{errors.cnpj_cpf}</span>
+                      )}
                     </div>
                   </div>
 
@@ -109,8 +171,13 @@ export default function RegisterPage() {
                       type="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0"
+                      className={`bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0 ${
+                        errors.email ? 'border-red-500' : ''
+                      }`}
                     />
+                    {errors.email && (
+                      <span className="text-sm text-red-500">{errors.email}</span>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -122,8 +189,13 @@ export default function RegisterPage() {
                       type="tel"
                       value={formData.telefone}
                       onChange={handleChange}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0"
+                      className={`bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0 ${
+                        errors.telefone ? 'border-red-500' : ''
+                      }`}
                     />
+                    {errors.telefone && (
+                      <span className="text-sm text-red-500">{errors.telefone}</span>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -135,8 +207,13 @@ export default function RegisterPage() {
                       type="password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0"
+                      className={`bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus-visible:ring-purple-500 focus-visible:ring-offset-0 ${
+                        errors.password ? 'border-red-500' : ''
+                      }`}
                     />
+                    {errors.password && (
+                      <span className="text-sm text-red-500">{errors.password}</span>
+                    )}
                   </div>
 
                   <div className="flex gap-4">
