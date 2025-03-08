@@ -9,11 +9,14 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token') 
+    const cookies = document.cookie.split(';');
+    const jwtCookie = cookies.find(cookie => cookie.trim().startsWith('jwt='));
+    const token = jwtCookie ? jwtCookie.split('=')[1] : null;
+
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return config
+    return config;
   },
   (error) => {
     return Promise.reject(error)
@@ -44,17 +47,10 @@ export interface SignUpData {
 }
 
 export const AuthService = {
-  async signIn({ email, password }: SignInData) {
+  async signIn(data: SignInData) {
     try {
-      const response = await api.post('http://localhost:9090/api/user/login', { email, password });
-      const { token } = response.data;
-      
-      if (token) {
-        localStorage.setItem('token', token);
-        api.defaults.headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      return response.data;
+      const response = await api.post('http://localhost:9090/api/user/login', data);
+      return response;
     } catch (error) {
       throw error;
     }
@@ -70,8 +66,7 @@ export const AuthService = {
   },
 
   logout() {
-    localStorage.removeItem('@App:token');
-    delete api.defaults.headers['Authorization'];
+    document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
   }
 };
 

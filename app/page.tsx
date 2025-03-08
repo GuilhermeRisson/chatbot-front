@@ -52,6 +52,12 @@ export default function LandingPage() {
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
+                <Link href="/login">
+                  <Button className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-lg px-8 py-6">
+                    Entrar
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
                 {/* <Button
                   variant="outline"
                   className="border-white/20 bg-white/10 text-white hover:bg-white/20 text-lg px-8 py-6"

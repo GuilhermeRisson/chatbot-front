@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from 'next/navigation'
 import { ArrowRight, Building2, Mail, Phone, AlertCircle } from "lucide-react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -151,14 +152,18 @@ export default function RegisterPage() {
                     </div>
                   </div>
 
-                  <Button
-                    type="button"
-                    onClick={() => setStep(2)}
-                    className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white"
-                  >
-                    Próximo
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  <div className="flex gap-4">
+                  <Link href="/login" className="w-full">
+                    <Button type="button"  className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white">
+                      Já é usuário ?
+                    </Button>
+                  </Link>
+                    <Button type="button" onClick={() => setStep(2)} className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white">
+                        Próximo
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>                 
+
                 </>
               ) : (
                 <>
@@ -224,10 +229,7 @@ export default function RegisterPage() {
                     >
                       Voltar
                     </Button>
-                    <Button
-                      type="submit"
-                      className="flex-1 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white"
-                    >
+                    <Button type="submit" className="flex-1 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white">
                       Cadastrar
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>

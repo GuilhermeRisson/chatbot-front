@@ -85,18 +85,7 @@ export default function LoginPage() {
                 </>
               )}
             </Button>
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-white/10" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-black/40 px-2 text-gray-400">Or continue with</span>
-              </div>
-            </div>
-            <Button variant="outline" className="w-full border-white/20 bg-white/10 text-white hover:bg-white/20">
-              <Fingerprint className="mr-2 h-4 w-4" />
-              Biometric Login
-            </Button>
+
           </form>
         </CardContent>
       </Card>

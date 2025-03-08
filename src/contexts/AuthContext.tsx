@@ -33,22 +33,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  async function signIn({ email, password }: SignInData) {
+  const signIn = async (data: SignInData) => {
     try {
-      const response = await AuthService.signIn({ email, password });
-      setUser(response.user);
-      router.push('/admin'); 
+      const response = await AuthService.signIn(data);
+      const { token, user } = response.data;
+
+      // Salva o token no cookie de forma segura
+      document.cookie = `jwt=${token}; path=/; secure; samesite=strict`;
+      
+      setUser(user);
+      router.push('/admin');
     } catch (error) {
       console.error('Erro no login:', error);
       throw error;
     }
-  }
+  };
 
-  function signOut() {
-    AuthService.logout();
+  const signOut = () => {
+    // Remove o token do cookie ao fazer logout
+    document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     setUser(null);
-    router.push('/');
-  }
+    router.push('/login');
+  };
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated, signIn, signOut }}>
